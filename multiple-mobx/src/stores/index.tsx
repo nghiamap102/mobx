@@ -1,18 +1,20 @@
-import { configure, makeAutoObservable } from "mobx";
+import { configure } from "mobx";
 import React from "react";
 import AnimalStore from "./animalStore";
-import noteStore from "./noteStore";
-import userStore from "./userStore";
+import NoteStore from "./noteStore";
+import TodoStore from "./todoStore";
+import UserStore from "./userStore";
 export class RootStore {
     
-    userStore: userStore
-    noteStore: noteStore
+    userStore: UserStore
+    noteStore: NoteStore
     animalStore: AnimalStore
+    todoStore : TodoStore
     constructor() {
-        this.userStore = new userStore(this);
-        this.noteStore = new noteStore(this);
+        this.userStore = new UserStore(this);
+        this.noteStore = new NoteStore(this);
         this.animalStore = new AnimalStore('gary');
-        makeAutoObservable(this)
+        this.todoStore = new TodoStore();
         configure({
             useProxies: "never",
             computedRequiresReaction: true

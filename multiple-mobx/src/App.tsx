@@ -1,5 +1,5 @@
-import { useObserver } from "mobx-react-lite";
 import NoteCPN from './components/note/index';
+import TodoList from './components/todo/index';
 import UserCPN from './components/user/index';
 
 export default function App() {
@@ -9,6 +9,8 @@ export default function App() {
     <div className="App">
       <UserCPN />
       <NoteCPN />
+      <TodoList/>
+
     </div>
   );
 }
