@@ -1,7 +1,6 @@
 import { RootStore } from './index';
-// src/stores/note.store.js
 
-import { makeAutoObservable } from "mobx";
+import { action, makeAutoObservable, observable } from "mobx";
 
 interface INote {
     note: string;
@@ -10,14 +9,13 @@ interface INote {
 
 class noteStore {
     notes: INote[] = [];
-
     rootStore: RootStore;
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
         makeAutoObservable(this);
     }
 
-    addNote(note: string , username : string) {
+    @action addNote(note: string , username : string) {
         let a = {note , username}
         this.notes.push(a);
     }

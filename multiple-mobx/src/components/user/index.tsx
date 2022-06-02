@@ -1,11 +1,28 @@
+import { autorun, trace } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useContext } from "react";
 import { StoresContext } from '../../stores';
 
-type Props = {
+const UserCPN = () => {
+    // let message = { author: 'abc', age: 10 }
 
-};
-const UserCpn = () => {
+    // const twitterUrls = observable.object({
+    //     Joe: "twitter.com/joey"
+    // })
+
+    // autorun(() => {
+    //     console.log(get(twitterUrls, "Sara")) // `get` can track not yet existing properties.
+    // })
+    // //first
+    // runInAction(() => {
+    //     set(twitterUrls, { Sara: "twitter.com/horsejs" })
+    // })
+
+    autorun((ele) => {
+        trace() 
+        console.log(ele)
+    })
+ 
     const useStores = () => useContext(StoresContext);
     const { noteStore, userStore } = useStores();
 
@@ -13,16 +30,14 @@ const UserCpn = () => {
         e.preventDefault();
         const { value } = e.target;
 
-        // access the user store set name action
         userStore.setUserName(value);
     };
 
     return <>
         <h1>hello {userStore.name}</h1>
-
         <h2>Change your name here</h2>
         <input type="text" value={userStore.name} onChange={handleNameChange} />
     </>
 };
 
-export default observer(UserCpn);
+export default observer(UserCPN);
