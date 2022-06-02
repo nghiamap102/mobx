@@ -16,13 +16,14 @@ const TodoList = () => {
 
     const handleSubmit = ()=>{
         todoStore.addTodo(text);
+        setText("")
     }
 
     return (
         <>
             <div className="row">
                 <table className="table table-hover">
-                    <input type="text" onChange={handleChange} placeholder="todo"/>
+                    <input type="text" onChange={handleChange} value={text} placeholder="todo"/>
                     <button onClick={handleSubmit} type='button'>Add</button>
                     <thead className="thead-light">
                         <tr>
