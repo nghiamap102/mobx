@@ -1,0 +1,124 @@
+{
+	"info": {
+		"_postman_id": "fd074bae-7ea8-4467-87c3-9ba1050e4b11",
+		"name": "vDMS_Fresher",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4078063"
+	},
+	"item": [
+		{
+			"name": "API_Query",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Path\": \"/root/vdms/tangthu/data\",\r\n    \"IsInTree\": true,\r\n    \"SearchKey\": \"-title:(* TO *)\",\r\n    \"Layers\": [\r\n        \"CONTAINER\"\r\n    ],\r\n    \"Start\": 0,\r\n    \"Count\": -1,\r\n    \"ReturnFields\": [\r\n        \"*\"\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://10.225.0.246/vdms_mvc/api/v1/query",
+					"protocol": "http",
+					"host": [
+						"10",
+						"225",
+						"0",
+						"246"
+					],
+					"path": [
+						"vdms_mvc",
+						"api",
+						"v1",
+						"query"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetToken",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "admin",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "Vbd@329331LTK",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://hcmlis-auth.vietbando.vn/oauth/token",
+					"protocol": "https",
+					"host": [
+						"hcmlis-auth",
+						"vietbando",
+						"vn"
+					],
+					"path": [
+						"oauth",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "qdTBo4-Lgt7FjwwfRl0pgW53XDOTe9hqPMZMVSMYLk2mWSi6FSYEhP52ce6161Vq2uqKrIZKWY3vdNvSc2OkO5RShIP12U5GE47QF0d58N5OEaMAXCmNEV2WZxEX4ceDKdwrzqOlDLXs45ewk-rdWhR6C4HAHtJV95C_Bpr3CwtOvnNjr1hGpuUMZGAdX7f9HP6MKl3b5HgnGIQTa9nd1yZ-tsdr6ZLgqdpWLsZoYwEMNf0iUHwqrojcOhXx0qZaAqprGUfpbgnI5u1vPZEbopE9yAyAg4wcP_TBHBwNdqXzV9GDonfsRZdwv6W4UyOoK08dzvAPX4c-x7ZumjdtMPeJ3mwJSTUBYGn45xmC4pgV5YEyXHu2XxulT5dUQsWdGTc9GOPigQMIEugZD4nh8RkDO79HejDDfHVurEX7cd8nqc6KrAkDHthklW9C4uo3Vy8A_XeAlJYsTSl4YqnCWxuXMRI",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

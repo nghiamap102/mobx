@@ -1,7 +1,7 @@
 import { autorun, trace } from "mobx";
 import { observer } from "mobx-react-lite";
 import { useContext } from "react";
-import { StoresContext } from '../../stores';
+import { RootStoresContext } from '../../stores';
 
 const UserCPN = () => {
     // let message = { author: 'abc', age: 10 }
@@ -23,7 +23,7 @@ const UserCPN = () => {
         console.log(ele)
     })
  
-    const useStores = () => useContext(StoresContext);
+    const useStores = () => useContext(RootStoresContext);
     const { noteStore, userStore } = useStores();
 
     const handleNameChange = (e: any) => {

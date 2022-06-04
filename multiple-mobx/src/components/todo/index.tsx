@@ -1,9 +1,9 @@
 import React from "react";
 import { observer } from "mobx-react-lite";
-import { StoresContext } from "../../stores";
+import { RootStoresContext } from "../../stores";
 
 const TodoList = () => {
-    const useStores = React.useContext(StoresContext);
+    const useStores = React.useContext(RootStoresContext);
 
     const todoStore = useStores.todoStore;
 

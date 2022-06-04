@@ -1,11 +1,11 @@
 import { observer } from "mobx-react-lite";
 import { useContext, useState } from "react";
-import { StoresContext } from '../../stores';
+import { RootStoresContext } from '../../stores';
 
 const NoteCPN = () => {
 
 
-    const store = useContext(StoresContext);
+    const store = useContext(RootStoresContext);
 
     const [note, setNote] = useState("");
 
