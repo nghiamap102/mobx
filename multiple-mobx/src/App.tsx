@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { useEffect } from 'react';
 import Map from './components/map';
-// var querystring = require('querystring');
 import qs from 'qs';
 import map, { AuthAPI, endpoints } from './api/map';
 export default function App() {
@@ -40,7 +38,4 @@ export default function App() {
       <Map />
     </div>
   </>
-  {/* <UserCPN />
-      <NoteCPN />
-      <TodoList/> */}
 }
