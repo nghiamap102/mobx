@@ -31,8 +31,6 @@ const Map = () => {
         });
 
         const coordinatesGeocoder: any = function (query: any) {
-            // Match anything which looks like
-            // decimal degrees coordinate pair.
             const matches = query.match(
                 /^[ ]*(?:Lat: )?(-?\d+\.?\d*)[, ]+(?:Lng: )?(-?\d+\.?\d*)[ ]*$/i
             );

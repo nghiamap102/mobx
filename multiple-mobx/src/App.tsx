@@ -1,22 +1,44 @@
-import Map from './components/map';
-import NoteCPN from './components/note/index';
-import TodoList from './components/todo/index';
-import UserCPN from './components/user/index';
+import axios from 'axios';
 import { useEffect } from 'react';
-import axios, { Axios } from 'axios';
-
-
+import Map from './components/map';
+// var querystring = require('querystring');
+import qs from 'qs';
+import map, { AuthAPI, endpoints } from './api/map';
 export default function App() {
 
-  useEffect(()=>{
-    console.log();
-    
-  },[])
+  useEffect(() => {
+    getAccessToken()
+  }, [])
+
+  const getAccessToken = async () => {
+    try {
+      await map.get(endpoints['layer']).then(res => console.log(res))
+    } catch (error) {
+      console.log(error);
+    }
+    const options = {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      data: qs.stringify({
+        "grant_type": "password",
+        "username": "admin",
+        "password": "Vbd@329331LTK"
+      }),
+    };
+
+    try {
+      let response = await AuthAPI(options);
+      localStorage.setItem("access_token", response.data.access_token)
+    } catch (error: any) {
+      console.log(error);
+    }
+  }
+
 
   return <>
-  <div>
-    <Map />
-  </div>
+    <div>
+      <Map />
+    </div>
   </>
   {/* <UserCPN />
       <NoteCPN />
