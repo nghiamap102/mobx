@@ -7,11 +7,21 @@ import "./Map.css";
 import Tooltip from './../tooltip/index';
 import { observer } from 'mobx-react-lite';
 import { RootStoresContext } from "../../stores";
+import mnDistricts from '../../data/mn/mn-districts.json'
 
-mapboxgl.accessToken =
-    "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
+// mapboxgl.accessToken = process.env.API_KEY;
+mapboxgl.accessToken = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
 
 const Map = () => {
+
+    const [hoveredDistrict, _setHoveredDistrict] = useState(null);
+    const hoveredDistrictRef = useRef(hoveredDistrict);
+
+    const setHoveredDistrict = (data: any) => {
+        hoveredDistrictRef.current = data;
+        _setHoveredDistrict(data);
+    };
+
 
     const useStores = useContext(RootStoresContext).mapStore
 
@@ -74,8 +84,8 @@ const Map = () => {
 
             return geocodes;
         };
-
-        // Add the control to the map.
+        map.addControl(new mapboxgl.NavigationControl());
+        
         map.addControl(
             new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
@@ -87,6 +97,83 @@ const Map = () => {
         );
 
         map.on("load", () => {
+
+            map.addSource('district-source', {
+                'type': 'geojson',
+                'data': mnDistricts
+            });
+
+            map.addLayer({
+                'id': 'district-layer',
+                'type': 'fill',
+                'source': 'district-source',
+                'layout': {},
+                'paint': {
+                    'fill-color': [
+                        'match',
+                        ['get', 'CD116FP'],
+                        '01',
+                        '#5AA5D7',
+                        '02',
+                        '#02735E',
+                        '03',
+                        '#00E0EF',
+                        '04',
+                        '#84D0D9',
+                        '05',
+                        '#202359',
+                        '06',
+                        '#CE7529',
+                        '07',
+                        '#00AE6C',
+                        '08',
+                        '#0056A3',
+                        /* other */ '#ffffff'
+                    ],
+                    'fill-opacity': [
+                        'case',
+                        ['boolean', ['feature-state', 'hover'], false],
+                        .8,
+                        0.5
+                    ]
+                }
+            });
+
+            map.on('mousemove', 'district-layer', function (e: any) {
+                if (e.features.length > 0) {
+                    if (hoveredDistrictRef.current && hoveredDistrictRef.current > -1) {
+
+                        map.setFeatureState(
+                            { source: 'district-source', id: hoveredDistrictRef.current },
+                            { hover: false }
+                        );
+                    }
+
+                    const  _hoveredDistrict = e.features[0].id;
+
+                    map.setFeatureState(
+                        { source: 'district-source', id: _hoveredDistrict },
+                        { hover: true }
+                    );
+
+                    setHoveredDistrict(_hoveredDistrict);
+                }
+
+            });
+
+            // When the mouse leaves the state-fill layer, update the feature state of the
+            // previously hovered feature.
+            map.on('mouseleave', 'district-layer', function () {
+                if (hoveredDistrictRef.current) {
+                    map.setFeatureState(
+                        { source: 'district-source', id: hoveredDistrictRef.current },
+                        { hover: false }
+                    );
+                }
+                setHoveredDistrict(null);
+            });
+
+
             //line
             //contour default min zoom 9
             map.addLayer({
@@ -195,7 +282,7 @@ const Map = () => {
             setZoom(map.getZoom().toFixed(2));
         });
 
-
+        return ()=> map.remove();
     }, []);
 
     return (
