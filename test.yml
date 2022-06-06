@@ -102,3 +102,12 @@ const setHoveredDistrict = (data: any) => {
                     .addTo(map);
             }
         });
+{
+  "TemplateName": "string",
+  "Path": "string",
+  "LayerData": { "Title": "Test_data",
+    "Description": "Test_data",
+    "geo": "{\"type\":\"Point\",\"coordinates\":[106.50472374999998,11.741799732065971]}"}
+}
+
+				
