@@ -1,5 +1,6 @@
 {
     "env": {
+        "node": false,
         "browser": true,
         "es2021": true
     },
@@ -23,9 +24,11 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "no-unused-vars" : "warn",
-        "@typescript-eslint/no-explicit-any": "off",
-        "react/react-in-jsx-scope": "off",
-        "prettier/prettier" : "off"
+        "no-unused-vars": "warn",
+        "no-empty": "off",
+        "prettier/prettier": "off",
+        "@typescript-eslint/no-non-null-assertion": "off",
+        "@typescript-eslint/no-explicit-any" : "off",
+        "@typescript-eslint/no-empty-function" : "off"
     }
 }

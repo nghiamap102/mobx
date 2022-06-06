@@ -1,14 +1,12 @@
 import { RootStore } from './index';
 
-import { computed, makeAutoObservable } from "mobx";
+import { action, makeAutoObservable } from "mobx";
+import mapAPI, { endpoints } from 'src/api/mapAPI';
 
-interface IMarker {
-    arrMarker: []
-}
 
 class MapStore {
 
-    arrMarker: any[] = [];
+    listLocation :any[]= [];
 
     rootStore: RootStore;
     constructor(rootStore: RootStore) {
@@ -16,9 +14,10 @@ class MapStore {
         makeAutoObservable(this);
     }
 
-    @computed get getArrMarker() {
-        return this.arrMarker;
+    get getListLocation() {
+        return this.listLocation;
     }
+
 }
 
 export default MapStore;

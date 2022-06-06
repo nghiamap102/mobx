@@ -1,7 +1,10 @@
 import { useEffect } from 'react';
 import Map from './components/map';
 import qs from 'qs';
-import map, { AuthAPI, endpoints } from './api/map';
+import mapAPI, { AuthAPI, endpoints } from './api/mapAPI';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
+import './App.css'
+
 export default function App() {
 
   useEffect(() => {
@@ -9,11 +12,7 @@ export default function App() {
   }, [])
 
   const getAccessToken = async () => {
-    try {
-      await map.get(endpoints['layer']).then(res => console.log(res))
-    } catch (error) {
-      console.log(error);
-    }
+    
     const options = {
       method: 'POST',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -25,7 +24,7 @@ export default function App() {
     };
 
     try {
-      let response = await AuthAPI(options);
+      const response = await AuthAPI(options);
       localStorage.setItem("access_token", response.data.access_token)
     } catch (error: any) {
       console.log(error);

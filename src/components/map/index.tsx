@@ -1,178 +1,79 @@
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
-import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 import mapboxgl from "mapbox-gl";
+import { observer } from 'mobx-react-lite';
 import { useContext, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import "./Map.css";
+import mapAPI, { API_TOKEN } from "../../api/mapAPI";
 import Tooltip from './../tooltip/index';
-import { observer } from 'mobx-react-lite';
-import { RootStoresContext } from "../../stores";
-import mnDistricts from '../../data/mn/mn-districts.json'
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
+import { RootStoresContext } from "src/stores";
+import Popup from "../popup";
+import qs from 'qs';
+import { endpoints } from './../../api/mapAPI';
 
-// mapboxgl.accessToken = process.env.API_KEY;
-mapboxgl.accessToken = "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
+mapboxgl.accessToken = API_TOKEN;
 
 const Map = () => {
-
-    const [hoveredDistrict, _setHoveredDistrict] = useState(null);
-    const hoveredDistrictRef = useRef(hoveredDistrict);
-
-    const setHoveredDistrict = (data: any) => {
-        hoveredDistrictRef.current = data;
-        _setHoveredDistrict(data);
-    };
-
+    const mapBoxGl: any = mapboxgl
 
     const useStores = useContext(RootStoresContext).mapStore
 
-
+    const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }))
     const tooltipRef = useRef(new mapboxgl.Popup({ offset: 15 }));
-    const mapContainer = useRef<any>(null);
+
+    const mapContainer = useRef<any>();
     const [long, setLong] = useState(-70.9);
     const [lat, setLat] = useState(42.35);
     const [zoom, setZoom] = useState(9);
 
+    const [name, setname] = useState('')
+    const [description, setDescription] = useState('')
+
+    const [listLocation, setListlocation] = useState(useStores.listLocation)
+
     useEffect(() => {
-        const map: any = new mapboxgl.Map({
+
+        const map = new mapboxgl.Map({
             container: mapContainer.current,
             style: "mapbox://styles/mapbox/outdoors-v11",
             center: [long, lat],
             zoom: zoom,
         });
+        const draw = new MapboxDraw({
+            displayControlsDefault: false,
+            controls: {
+                polygon: true,
+                trash: true,
+                point: true,
+                combine_features: true,
+                line_string: true,
+            },
+            defaultMode: 'draw_polygon'
+        });
 
-        const coordinatesGeocoder: any = function (query: any) {
-            const matches = query.match(
-                /^[ ]*(?:Lat: )?(-?\d+\.?\d*)[, ]+(?:Lng: )?(-?\d+\.?\d*)[ ]*$/i
-            );
-            if (!matches) {
-                return null;
-            }
-
-            function coordinateFeature(lng: any, lat: any) {
-                return {
-                    center: [lng, lat],
-                    geometry: {
-                        type: "Point",
-                        coordinates: [lng, lat],
-                    },
-                    place_name: "Lat: " + lat + " Lng: " + lng,
-                    place_type: ["coordinate"],
-                    properties: {},
-                    type: "Feature",
-                };
-            }
-
-            const coord1 = Number(matches[1]);
-            const coord2 = Number(matches[2]);
-            const geocodes = [];
-
-            if (coord1 < -90 || coord1 > 90) {
-                // must be lng, lat
-                geocodes.push(coordinateFeature(coord1, coord2));
-            }
-
-            if (coord2 < -90 || coord2 > 90) {
-                // must be lat, lng
-                geocodes.push(coordinateFeature(coord2, coord1));
-            }
-
-            if (geocodes.length === 0) {
-                // else could be either lng, lat or lat, lng
-                geocodes.push(coordinateFeature(coord1, coord2));
-                geocodes.push(coordinateFeature(coord2, coord1));
-            }
-
-            return geocodes;
-        };
+        // interactive
         map.addControl(new mapboxgl.NavigationControl());
-        
+        //search
         map.addControl(
             new MapboxGeocoder({
                 accessToken: mapboxgl.accessToken,
-                localGeocoder: coordinatesGeocoder,
-                zoom: 10,
-                placeholder: "Try: -40, 170",
-                reverseGeocode: true,
+                mapboxgl: mapBoxGl,
+                marker: true,
+                placeholder: "Give me a text",
+                bbox: [140.999326, -37.571471, 159.209167, -28.085795],
+
             })
         );
+        map.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true,
+            showUserHeading: true,
+            showUserLocation:true
+        }));
 
         map.on("load", () => {
-
-            map.addSource('district-source', {
-                'type': 'geojson',
-                'data': mnDistricts
-            });
-
-            map.addLayer({
-                'id': 'district-layer',
-                'type': 'fill',
-                'source': 'district-source',
-                'layout': {},
-                'paint': {
-                    'fill-color': [
-                        'match',
-                        ['get', 'CD116FP'],
-                        '01',
-                        '#5AA5D7',
-                        '02',
-                        '#02735E',
-                        '03',
-                        '#00E0EF',
-                        '04',
-                        '#84D0D9',
-                        '05',
-                        '#202359',
-                        '06',
-                        '#CE7529',
-                        '07',
-                        '#00AE6C',
-                        '08',
-                        '#0056A3',
-                        /* other */ '#ffffff'
-                    ],
-                    'fill-opacity': [
-                        'case',
-                        ['boolean', ['feature-state', 'hover'], false],
-                        .8,
-                        0.5
-                    ]
-                }
-            });
-
-            map.on('mousemove', 'district-layer', function (e: any) {
-                if (e.features.length > 0) {
-                    if (hoveredDistrictRef.current && hoveredDistrictRef.current > -1) {
-
-                        map.setFeatureState(
-                            { source: 'district-source', id: hoveredDistrictRef.current },
-                            { hover: false }
-                        );
-                    }
-
-                    const  _hoveredDistrict = e.features[0].id;
-
-                    map.setFeatureState(
-                        { source: 'district-source', id: _hoveredDistrict },
-                        { hover: true }
-                    );
-
-                    setHoveredDistrict(_hoveredDistrict);
-                }
-
-            });
-
-            // When the mouse leaves the state-fill layer, update the feature state of the
-            // previously hovered feature.
-            map.on('mouseleave', 'district-layer', function () {
-                if (hoveredDistrictRef.current) {
-                    map.setFeatureState(
-                        { source: 'district-source', id: hoveredDistrictRef.current },
-                        { hover: false }
-                    );
-                }
-                setHoveredDistrict(null);
-            });
-
 
             //line
             //contour default min zoom 9
@@ -212,7 +113,7 @@ const Map = () => {
                             properties: {},
                             geometry: {
                                 type: "Point",
-                                coordinates: [-91.3403, 0.0164],
+                                coordinates: [-long + 1, lat + 1],
                             },
                         },
                     ],
@@ -234,18 +135,27 @@ const Map = () => {
                 },
             });
         });
-        map.on("click", function (e: any) {
-            useStores.arrMarker.map((ele: any) => ele.remove(map));
-            const a: any = new mapboxgl.Marker(e).setLngLat(e.lngLat);
-            a.addTo(map);
-            useStores.arrMarker.push(a);
-            // var feature = features[0];
-            // console.log(feature);
-            // new mapboxgl.Popup({ offset: [0, -15] })
-            //   .setLngLat(feature.geometry.coordinates)
-            //   .setHTML("<h3>" + feature.properties.title + "abc" + "</h3>")
-            //   .addTo(map);
-        });
+        map.on("click", e => {
+            const features = map.queryRenderedFeatures(e.point, {})
+            if (features.length > 0) {
+                const feature = features[0]
+                // create popup node
+                const popupNode = document.createElement("div")
+
+                ReactDOM.render(
+                    <Popup
+                        changeName={changeName}
+                        changeDescription={changeDescription}
+                    />,
+                    popupNode
+                )
+                popUpRef.current
+                    .setLngLat(e.lngLat)
+                    .setDOMContent(popupNode)
+                    .addTo(map)
+            }
+        })
+
 
         map.on("click", "circle", (e: any) => {
             map.flyTo({
@@ -253,44 +163,72 @@ const Map = () => {
             });
         });
 
-        map.on("mouseenter", "circle", () => {
-            map.getCanvas().style.cursor = "pointer";
-        });
 
-        map.on("mouseleave", "circle", () => {
-            map.getCanvas().style.cursor = "";
-        });
-
-        map.on("mousemove", (e: any) => {
-            const features = map.queryRenderedFeatures(e.point);
-            if (features.length) {
-                const feature = features[0];
-
-                const tooltipNode = document.createElement("div");
-                ReactDOM.render(<Tooltip feature={feature} />, tooltipNode);
-
-                tooltipRef.current
-                    .setLngLat(e.lngLat)
-                    .setDOMContent(tooltipNode)
-                    .addTo(map);
-            }
-        });
         ///set sidebar
         map.on("move", () => {
-            setLong(map.getCenter().lng.toFixed(4));
-            setLat(map.getCenter().lat.toFixed(4));
-            setZoom(map.getZoom().toFixed(2));
+            setLong(parseInt(map.getCenter().lng.toFixed(4)));
+            setLat(parseInt(map.getCenter().lat.toFixed(4)));
+            setZoom(parseInt(map.getZoom().toFixed(2)));
         });
 
-        return ()=> map.remove();
+        return () => map.remove();
     }, []);
+
+
+    useEffect(() => {
+        getListLocation()
+    }, [])
+
+    const getListLocation = async () => {
+        const res = await mapAPI.get(endpoints['node'])
+        if (res.data.data) {
+            const a = res.data.data?.map((ele: any) => ele)
+            setListlocation([...a])
+        }
+    }
+
+
+    const changeName = (e: any) => {
+        const { value } = e.target.value
+        setname(value)
+    }
+
+    const changeDescription = (e: any) => {
+        const { value } = e.target.value
+        setDescription(value)
+    }
+
+    const submitChange = async () => {
+        try {
+
+
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const fly = () => {
+        console.log('abc');
+        setLong(10)
+        setLat(20)
+    }
 
     return (
         <div>
+            {/* <div className="locationInfo">
+                Longitude: {long} | Latitude: {lat} | Zoom: {zoom}
+            </div> */}
             <div className="sidebar">
-
+                {listLocation.map((ele: any, index: number) => (
+                    <div key={index + ' a'} onClick={fly}>
+                        {ele.Title}
+                    </div>
+                ))}
             </div>
             <div className="map-container" ref={mapContainer} />
+            <div className="control">
+                <button onClick={submitChange} type="button" className="btn btn-primary">Save</button>
+            </div>
         </div>
     );
 };
