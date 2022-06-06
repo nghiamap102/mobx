@@ -110,4 +110,135 @@ const setHoveredDistrict = (data: any) => {
     "geo": "{\"type\":\"Point\",\"coordinates\":[106.50472374999998,11.741799732065971]}"}
 }
 
-				
+# ------new-----
+  const draw = new MapboxDraw({
+            displayControlsDefault: false,
+            controls: {
+                polygon: true,
+                trash: true,
+                point: true,
+                combine_features: true,
+                line_string: true,
+            },
+            defaultMode: 'draw_polygon'
+        });
+
+        // interactive
+        map.addControl(new mapboxgl.NavigationControl());
+        //search
+        map.addControl(
+            new MapboxGeocoder({
+                accessToken: mapboxgl.accessToken,
+                mapboxgl: mapBoxGl,
+                marker: true,
+                placeholder: "Give me a text",
+                bbox: [140.999326, -37.571471, 159.209167, -28.085795],
+
+            })
+        );
+        map.addControl(new mapboxgl.GeolocateControl({
+            positionOptions: {
+                enableHighAccuracy: true
+            },
+            trackUserLocation: true,
+            showUserHeading: true,
+            showUserLocation: true
+        }));
+
+        map.on("load", () => {
+
+            //line
+            //contour default min zoom 9
+            map.addLayer({
+                id: "biengioi",
+                type: "line",
+                source: {
+                    type: "vector",
+                    url: "mapbox://mapbox.mapbox-terrain-v2",
+                },
+                "source-layer": "contour",
+            });
+            //add source
+            map.addSource("points", {
+                type: "geojson",
+                data: {
+                    type: "FeatureCollection",
+                    features: [
+                        {
+                            type: "Feature",
+                            properties: {},
+                            geometry: {
+                                type: "Point",
+                                coordinates: [long, lat],
+                            },
+                        },
+                        {
+                            type: "Feature",
+                            properties: {},
+                            geometry: {
+                                type: "Point",
+                                coordinates: [-long, -lat],
+                            },
+                        },
+                        {
+                            type: "Feature",
+                            properties: {},
+                            geometry: {
+                                type: "Point",
+                                coordinates: [-long + 1, lat + 1],
+                            },
+                        },
+                    ],
+                },
+            });
+
+            map.addLayer({
+                metadata: {
+                    id: "marker",
+                },
+                id: "circle",
+                type: "circle",
+                source: "points",
+                paint: {
+                    "circle-color": "#4264fb",
+                    "circle-radius": 8,
+                    "circle-stroke-width": 2,
+                    "circle-stroke-color": "#ffffff",
+                },
+            });
+        });
+        map.on("click", e => {
+            const features = map.queryRenderedFeatures(e.point, {})
+            if (features.length > 0) {
+                const feature = features[0]
+                // create popup node
+                const popupNode = document.createElement("div")
+
+                ReactDOM.render(
+                    <Popup
+                        changeName={changeName}
+                        changeDescription={changeDescription}
+                    />,
+                    popupNode
+                )
+                popUpRef.current
+                    .setLngLat(e.lngLat)
+                    .setDOMContent(popupNode)
+                    .addTo(map)
+            }
+        })
+
+
+        map.on("click", "circle", (e: any) => {
+            map.flyTo({
+                center: e.features[0].geometry.coordinates,
+            });
+        });
+
+
+        ///set sidebar
+        map.on("move", () => {
+            setLong(parseInt(map.getCenter().lng.toFixed(4)));
+            setLat(parseInt(map.getCenter().lat.toFixed(4)));
+            setZoom(parseInt(map.getZoom().toFixed(2)));
+        });

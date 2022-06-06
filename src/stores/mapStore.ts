@@ -6,8 +6,8 @@ import mapAPI, { endpoints } from 'src/api/mapAPI';
 
 class MapStore {
 
-    listLocation :any[]= [];
-
+    listLocation: any[] = [];
+    arrMarker: any[] =  [];
     rootStore: RootStore;
     constructor(rootStore: RootStore) {
         this.rootStore = rootStore;
