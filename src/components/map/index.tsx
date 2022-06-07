@@ -145,8 +145,6 @@ const MapCPN = () => {
         });
 
         map.current?.on('draw.create', (e) => {
-            useStores.arrMarker.map((ele: any) => ele.remove(map.current));
-            useStores.arrMarker.push(newMarkder(e))
 
         })
 
@@ -175,17 +173,17 @@ const MapCPN = () => {
         });
     }, [lng, lat])
 
-    const newMarkder = (e: any) => {
-        const el = document.createElement('div')
-        el.style.width = "100px";
-        el.style.height = "100px";
-        el.style.borderRadius = "50%";
-        el.style.backgroundColor = "rgb(22, 170, 255)";
-        el.style.zIndex = "-1";
-        const a = new mapboxgl.Marker(el).setLngLat(e.features[0].geometry.coordinates).addTo(Validation.checkEmpty(map.current))
-        a.addTo(Validation.checkEmpty(map.current))
-        return a
-    }
+    // const newMarkder = (e: any) => {
+    //     const el = document.createElement('div')
+    //     el.style.width = "100px";
+    //     el.style.height = "100px";
+    //     el.style.borderRadius = "50%";
+    //     el.style.backgroundColor = "rgb(22, 170, 255)";
+    //     el.style.zIndex = "-1";
+    //     const a = new mapboxgl.Marker(el).setLngLat(e.features[0].geometry.coordinates).addTo(Validation.checkEmpty(map.current))
+    //     a.addTo(Validation.checkEmpty(map.current))
+    //     return a
+    // }
 
     const fly = (ele: any) => {
         console.log(ele);
