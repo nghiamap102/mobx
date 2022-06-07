@@ -38,18 +38,23 @@
   }
 }
 
+.mapboxgl-ctrl-bottom-left{
+  display: none;
+}
 .sidebar {
   position: absolute;
-  top: 0px;
+  top: 30%;
   left: 10px;
   width: 30%;
-  height: 100%;
+  height: 50%;
   color: black;
+  background-color: white;
+  border-radius: 20px;
+  padding: 20px;
   z-index: 999;
 }
 
 .control {
-  width: 100%;
   height: 40px;
   position: absolute;
   bottom: 0px;

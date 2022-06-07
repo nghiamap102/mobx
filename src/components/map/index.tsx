@@ -1,28 +1,27 @@
+import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 import mapboxgl, { Map } from "mapbox-gl";
+import { RulerControl, StylesControl } from 'mapbox-gl-controls';
 import { observer } from 'mobx-react-lite';
 import { useContext, useEffect, useRef, useState } from "react";
-import ReactDOM from "react-dom";
-import mapAPI, { API_TOKEN } from "../../api/mapAPI";
-import Tooltip from './../tooltip/index';
-import MapboxDraw from '@mapbox/mapbox-gl-draw';
 import { RootStoresContext } from "src/stores";
-import Popup from "../popup";
-import qs from 'qs';
-import { endpoints } from './../../api/mapAPI';
 import Validation from "src/utils/validation";
+import mapAPI, { API_TOKEN, endpoints } from "../../api/mapAPI";
+import Popup from '../popup';
+import ReactDOM from "react-dom"
+import Tooltip from '../tooltip';
+import Helper from './../../utils/helper/index';
+
 
 mapboxgl.accessToken = API_TOKEN;
 
 const MapCPN = () => {
-    const mapBoxGl: any = mapboxgl
+
 
     const useStores = useContext(RootStoresContext).mapStore
-
     const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }))
-    const tooltipRef = useRef(new mapboxgl.Popup({ offset: 15 }));
-    const map = useRef<Map>();
 
+    const map = useRef<Map>();
     const mapContainer = useRef<any>();
     const [lng, setLng] = useState(-70.9);
     const [lat, setLat] = useState(42.35);
@@ -30,11 +29,10 @@ const MapCPN = () => {
     const [title, setTitle] = useState('')
     const [description, setDescription] = useState('')
 
-    // const [listLocation, setListlocation] = useState(useStores.listLocation)
-    const [listLocation, setListlocation] = useState<any>([])
-
 
     useEffect(() => {
+        useStores.fetchListLocation();
+
         if (map.current) return;
         map.current = new mapboxgl.Map({
             container: mapContainer.current,
@@ -45,12 +43,10 @@ const MapCPN = () => {
 
     }, []);
 
-
     useEffect(() => {
-        getListLocation()
+        
         if (!map.current) return;
         map.current.on("load", () => {
-
             //line
             //contour default min zoom 9
             map.current?.addLayer({
@@ -110,11 +106,52 @@ const MapCPN = () => {
                     "circle-stroke-color": "#ffffff",
                 },
             });
+
+            const draw = new MapboxDraw({
+                displayControlsDefault: false,
+                controls: {
+                    polygon: true,
+                    trash: true,
+                    point: true,
+                },
+
+                defaultMode: 'draw_polygon'
+            });
+
+
+            map.current?.addControl(draw, "top-right")
+            map.current?.addControl(new RulerControl(), 'top-right');
+            map.current?.addControl(new StylesControl(), 'top-right');
+            map.current?.addControl(new mapboxgl.GeolocateControl({
+                positionOptions: {
+                    enableHighAccuracy: true
+                },
+                trackUserLocation: true,
+                showUserHeading: true,
+                showUserLocation: true
+            }));
+
+
+            const mapBoxGl: any = mapboxgl
+            map.current?.addControl(
+                new MapboxGeocoder({
+                    accessToken: mapboxgl.accessToken,
+                    mapboxgl: mapBoxGl,
+                    marker: true,
+                    placeholder: "Give me a text",
+                }), "top-left"
+            );
+            map.current?.addControl(new mapboxgl.NavigationControl(), "top-right");
         });
-        map.current?.on("click", e => {
+
+        map.current?.on('draw.create', (e) => {
+            useStores.arrMarker.map((ele: any) => ele.remove(map.current));
+            useStores.arrMarker.push(newMarkder(e))
+
+        })
+
+        map.current.on("click", e => {
             const features: any = map.current?.queryRenderedFeatures(e.point, {})
-            setLat(e.lngLat.lat)
-            setLng(e.lngLat.lng)
             if (features.length > 0) {
                 const popupNode = document.createElement("div")
                 ReactDOM.render(
@@ -131,7 +168,6 @@ const MapCPN = () => {
             }
         })
 
-
         map.current?.on("click", "circle", (e: any) => {
             map.current?.flyTo({
                 center: e.features[0].geometry.coordinates,
@@ -139,32 +175,32 @@ const MapCPN = () => {
         });
     }, [lng, lat])
 
+    const newMarkder = (e: any) => {
+        const el = document.createElement('div')
+        el.style.width = "100px";
+        el.style.height = "100px";
+        el.style.borderRadius = "50%";
+        el.style.backgroundColor = "rgb(22, 170, 255)";
+        el.style.zIndex = "-1";
+        const a = new mapboxgl.Marker(el).setLngLat(e.features[0].geometry.coordinates).addTo(Validation.checkEmpty(map.current))
+        a.addTo(Validation.checkEmpty(map.current))
+        return a
+    }
 
     const fly = (ele: any) => {
-        console.log(ele.geo.lng);
-
+        console.log(ele);
         map.current?.flyTo({
-            center: [ele.geo.lng, ele.geo.lat],
+            center: [ele[0], ele[1]],
             zoom: 6,
             speed: 5
         });
         useStores.arrMarker.map((ele: any) => ele.remove(map.current));
-        const a: any = new mapboxgl.Marker().setLngLat([ele.geo.lng, ele.geo.lat]);
+        const a: any = new mapboxgl.Marker().setLngLat(ele);
         a.addTo(map.current)
         useStores.arrMarker.push(a)
     }
 
-    const getListLocation = async () => {
-        // const res = await mapAPI.get(endpoints['node'])
-        // if (res.data.data) {
-        //     const a = res.data.data?.map((ele: any) => ele)
-        //     setListlocation([...a])
-        // }
-        setListlocation([{ Title: 'abc', geo: { lng: '10', lat: '20' } }, { Title: 'bcd', geo: { lng: '20.54874', lat: '10.012300' } }])
-    }
-
     const changeName = (e: any) => {
-        
         const { value } = e.target
         setTitle(value)
     }
@@ -176,28 +212,26 @@ const MapCPN = () => {
 
     const submitChange = async () => {
         try {
-            console.log(title , description , lng , lat);
-            
-            // const options = {
-            //     method: 'POST',
-            //     data: {
-            //         Path: '/root/vdms/tangthu/locationinfo',
-            //         LayerData: {
-            //             "Title": title,
-            //             "Description": description,
-            //             // eslint-disable-next-line no-useless-escape
-            //             "geo": `{\"type\":\"Point\",\"coordinates\":[${lng},${lat}]}`
-            //         }
-            //     }
-            // };
-            // await mapAPI(endpoints['node'],options).then(res => console.log(res.data))
+            console.log(title, description, lng, lat);
+
+            const options = {
+                method: 'POST',
+                data: {
+                    Path: '/root/vdms/tangthu/data/locationinfo',
+                    LayerData: {
+                        "Title": title,
+                        "Description": description,
+                        // eslint-disable-next-line no-useless-escape
+                        "geo": `{\"type\":\"Point\",\"coordinates\":[${lng},${lat}]}`
+                    }
+                }
+            };
+            await mapAPI(endpoints['node'], options).then(res => console.log(res.data))
 
         } catch (error) {
             console.log(error);
         }
     }
-
-
 
     return (
         <div>
@@ -205,11 +239,13 @@ const MapCPN = () => {
                 Longitude: {lng} | Latitude: {lat} | Zoom: {zoom}
             </div> */}
             <div className="sidebar">
-                {listLocation.map((ele: any, index: number) => (
-                    <div key={index + ' a'} onClick={() => fly(ele)} className="items">
-                        {ele.Title}
-                    </div>
-                ))}
+                {useStores.listLocation?.map((ele: any, index: number) => {
+                    return (
+                        <div key={index + ' a'} onClick={() => fly(Helper.getGeoLocation(ele))} className="items">
+                            {ele.Title}
+                        </div>
+                    )
+                })}
             </div>
             <div className="map-container" ref={mapContainer} />
             <div className="control">

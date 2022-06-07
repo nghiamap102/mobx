@@ -2011,7 +2011,20 @@
     "@turf/helpers" "^6.5.0"
     "@turf/invariant" "^6.5.0"
 
+"@turf/distance@6.3.0":
+  "integrity" "sha512-basi24ssNFnH3iXPFjp/aNUrukjObiFWoIyDRqKyBJxVwVOwAWvfk4d38QQyBj5nDo5IahYRq/Q+T47/5hSs9w=="
+  "resolved" "https://registry.npmjs.org/@turf/distance/-/distance-6.3.0.tgz"
+  "version" "6.3.0"
+  dependencies:
+    "@turf/helpers" "^6.3.0"
+    "@turf/invariant" "^6.3.0"
+
 "@turf/helpers@^6.1.4":
+  "integrity" "sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw=="
+  "resolved" "https://registry.npmjs.org/@turf/helpers/-/helpers-6.5.0.tgz"
+  "version" "6.5.0"
+
+"@turf/helpers@^6.3.0":
   "integrity" "sha512-VbI1dV5bLFzohYYdgqwikdMVpe7pJ9X3E+dlr425wa2/sMJqYDhTO++ec38/pcPvPE6oD9WEEeU3Xu3gza+VPw=="
   "resolved" "https://registry.npmjs.org/@turf/helpers/-/helpers-6.5.0.tgz"
   "version" "6.5.0"
@@ -2026,7 +2039,7 @@
   "resolved" "https://registry.npmjs.org/@turf/helpers/-/helpers-4.7.3.tgz"
   "version" "4.7.3"
 
-"@turf/invariant@^6.5.0":
+"@turf/invariant@^6.3.0", "@turf/invariant@^6.5.0":
   "integrity" "sha512-Wv8PRNCtPD31UVbdJE/KVAWKe7l6US+lJItRR/HOEW3eh+U/JwRCSUl/KZ7bmjM/C+zLNoreM2TU6OoLACs4eg=="
   "resolved" "https://registry.npmjs.org/@turf/invariant/-/invariant-6.5.0.tgz"
   "version" "6.5.0"
@@ -7200,6 +7213,13 @@
   "resolved" "https://registry.npmjs.org/map-obj/-/map-obj-4.3.0.tgz"
   "version" "4.3.0"
 
+"mapbox-gl-controls@^2.3.5":
+  "integrity" "sha512-FP4c7WhNoE+5JicMkq8TSqJwaxEpkhJlsq4Ye1lIGBy7ubS/l6EZ15ZRumrICpDZGOMMlfKKCpaCo+Kt5omkTg=="
+  "resolved" "https://registry.npmjs.org/mapbox-gl-controls/-/mapbox-gl-controls-2.3.5.tgz"
+  "version" "2.3.5"
+  dependencies:
+    "@turf/distance" "6.3.0"
+
 "mapbox-gl-directions@^3.0.3":
   "integrity" "sha512-9PV9sSXffvRzb2hAgC5DAEnYrCdiArIGNVAnBDjpeHRv7a5w6/xo81jQsAHnxdTtUUS7ZgWk6NErWkdH21jkPg=="
   "resolved" "https://registry.npmjs.org/mapbox-gl-directions/-/mapbox-gl-directions-3.0.3.tgz"
@@ -7242,7 +7262,7 @@
     "point-geometry" "0.0.0"
     "xtend" "^4.0.1"
 
-"mapbox-gl@^0.27.0 || ^0.28.0", "mapbox-gl@^0.41.0 <2.0.0", "mapbox-gl@^1.12.0", "mapbox-gl@^1.13.2", "mapbox-gl@>= 0.47.0 < 3.0.0", "mapbox-gl@>=0.32.1 <2.0.0":
+"mapbox-gl@^0.27.0 || ^0.28.0", "mapbox-gl@^0.41.0 <2.0.0", "mapbox-gl@^1.12.0", "mapbox-gl@^1.13.2", "mapbox-gl@>= 0.47.0 < 3.0.0", "mapbox-gl@>=0.32.1 <2.0.0", "mapbox-gl@>=1.0.0 <3.0.0":
   "integrity" "sha512-CPjtWygL+f7naL+sGHoC2JQR0DG7u+9ik6WdkjjVmz2uy0kBC2l+aKfdi3ZzUR7VKSQJ6Mc/CeCN+6iVNah+ww=="
   "resolved" "https://registry.npmjs.org/mapbox-gl/-/mapbox-gl-1.13.2.tgz"
   "version" "1.13.2"

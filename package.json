@@ -14,6 +14,7 @@
         "@types/react-dom": "^18.0.5",
         "axios": "^0.27.2",
         "mapbox-gl": "^1.13.2",
+        "mapbox-gl-controls": "^2.3.5",
         "mapbox-gl-directions": "^3.0.3",
         "mapbox-gl-draw": "^0.16.0",
         "mapbox-gl-draw-circle": "^1.1.2",

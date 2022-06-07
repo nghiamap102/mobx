@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import Map from './components/map';
+import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css';
 import qs from 'qs';
-import mapAPI, { AuthAPI, endpoints } from './api/mapAPI';
-import '@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.css'
-import './App.css'
+import { useEffect } from 'react';
+import { AuthAPI } from './api/mapAPI';
+import './App.css';
+import Map from './components/map';
+
 
 export default function App() {
 
